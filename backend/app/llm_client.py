@@ -15,7 +15,31 @@ analyze it and return a JSON with the following fields:
 - summary: a concise summary of the issue
 - type: one of ["bug", "feature", "refactor", "documentation", "other"]
 - priority_score: number between 1 (low) and 5 (critical)
-- suggested_labels: array of relevant labels (strings)
+- suggested_labels: array of relevant labels (strings) only have the standard github labels like [
+  "bug",
+  "feature",
+  "enhancement",
+  "refactor",
+  "documentation",
+  "test",
+  "chore",
+  "UI",
+  "backend",
+  "database",
+  "API",
+  "login-flow",
+  "security",
+  "performance",
+  "good first issue",
+  "help wanted",
+  "in progress",
+  "blocked",
+  "ready for review",
+  "wontfix",
+  "duplicate",
+  "question",
+]
+
 - potential_impact: brief description of what this issue could affect
 
 Respond ONLY with a valid JSON object, nothing else.
