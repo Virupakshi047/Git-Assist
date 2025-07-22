@@ -6,10 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 GITHUB_API_BASE = "https://api.github.com"
-GITHUB_TOKEN = os.getenv("GITHUB_API_TOKEN")
 
 HEADERS = {
-    "Authorization": f"Bearer {GITHUB_TOKEN}",
     "Accept": "application/vnd.github+json"
 }
 
