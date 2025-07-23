@@ -73,7 +73,7 @@ async def analyze_issue_with_llm(issue: dict):
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": prompt}
             ],
-            response_format={"type": "json_object"}, # Ensure the response is a JSON object
+            response_format={"type": "json_object"}, 
         )
         content = response.choices[0].message.content
         return json.loads(content)

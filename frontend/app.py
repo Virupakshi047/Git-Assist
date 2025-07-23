@@ -29,7 +29,7 @@ with col2:
     st.title("GitHub Issue Assistant")
 st.markdown("Analyze and summarize any public GitHub issue using AI.")
 
-# -- Input fields --
+
 repo_url = st.text_input("GitHub Repository URL", placeholder="https://github.com/owner/repo")
 issue_number = st.number_input("Issue Number", min_value=1, step=1)
 
@@ -102,8 +102,6 @@ if st.session_state.analysis_result:
 
 st.markdown("---")
 st.markdown("## 🧾 Analysis History")
-
-
 
 col1, col2 = st.columns([0.8, 0.2])
 with col2:
