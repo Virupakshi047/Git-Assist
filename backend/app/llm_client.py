@@ -1,12 +1,17 @@
 import os
 import json
-import requests
 from dotenv import load_dotenv
 from pydantic import BaseModel
+from together import AsyncTogether
 
 load_dotenv()
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
+
+if not TOGETHER_API_KEY:
+    raise ValueError("TOGETHER_API_KEY environment variable not set")
+
+aclient = AsyncTogether(api_key=TOGETHER_API_KEY)
 
 SYSTEM_PROMPT = """
 You are a GitHub Issue Assistant. Given an issue's title, body, and comments,
@@ -58,31 +63,22 @@ def build_prompt(title, body, comments):
     {comment_str}
     """
 
-HEADERS = {
-    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-    "Content-Type": "application/json",
-}
-
-PAYLOAD = {
-    "model": "deepseek/deepseek-r1-0528-qwen3-8b:free",
-    "messages": [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": ""}
-    ]
-}
-
 async def analyze_issue_with_llm(issue: dict):
     prompt = build_prompt(issue["title"], issue["body"], issue["comments"])
 
-    payload = PAYLOAD
-    payload["messages"][1]["content"] = prompt
-
     try:
-        response = requests.post("https://openrouter.ai/api/v1/chat/completions",
-                                 headers=HEADERS,
-                                 data=json.dumps(payload))
-        response.raise_for_status()
-        content = response.json()["choices"][0]["message"]["content"]
-        return json.loads(content)  # assumes model returns valid JSON
+        response = await aclient.chat.completions.create(
+            model="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"}, # Ensure the response is a JSON object
+        )
+        content = response.choices[0].message.content
+        return json.loads(content)
     except Exception as e:
-        raise Exception(f"OpenRouter LLM error: {str(e)}\nResponse: {response.text if 'response' in locals() else 'No response'}")
+        error_message = f"Together AI LLM error: {str(e)}"
+        if hasattr(e, 'response') and e.response:
+            error_message += f"\nResponse: {e.response.text}"
+        raise Exception(error_message)
