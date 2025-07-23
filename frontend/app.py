@@ -4,6 +4,24 @@ import json
 
 st.set_page_config(page_title="GitHub Issue Assistant")
 
+def get_severity_label(score: int) -> str:
+    labels = {
+        1: "Trivial",
+        2: "Low",
+        3: "Medium",
+        4: "High",
+        5: "Critical"
+    }
+    return labels.get(score, "Unknown")
+
+severity_colors = {
+    "Trivial": "gray",
+    "Low": "green",
+    "Medium": "blue",
+    "High": "orange",
+    "Critical": "red"
+}
+
 col1, col2 = st.columns([0.15, 0.85])
 with col1:
     st.image("assets/github-copilot-logo.png", width=80)
@@ -18,6 +36,19 @@ issue_number = st.number_input("Issue Number", min_value=1, step=1)
 # -- Session state to preserve output --
 if "analysis_result" not in st.session_state:
     st.session_state.analysis_result = None
+
+def fetch_and_update_history():
+    """Fetches analysis history from the backend and updates session state. load the history"""
+    try:
+        history_response = requests.get("http://127.0.0.1:8000/history")
+        if history_response.status_code == 200:
+            st.session_state.history = history_response.json()
+        else:
+            st.toast(f"Failed to fetch history: {history_response.status_code}", icon="🚨")
+            st.session_state.history = []  
+    except Exception as e:
+        st.toast(f"Could not connect to backend: {str(e)}", icon="❌")
+        st.session_state.history = []  
 
 # -- Button --
 if st.button("🔍 Analyze Issue"):
@@ -51,7 +82,9 @@ if st.session_state.analysis_result:
     st.markdown(f"**📝 Summary**: {result.get('summary', '-')}")
     st.markdown(f"**📌 Type**: `{result.get('type', '-')}`")
 
-    st.markdown(f"**🔥 Priority Score**: {result.get('priority_score', '-')}/5")
+    severity_label = get_severity_label(result["priority_score"])
+    color = severity_colors[severity_label]
+    st.markdown(f"**🔥 Priority**: <span style='color:{color};'>{severity_label}</span>", unsafe_allow_html=True)
 
     st.markdown("**🏷️ Suggested Labels**:")
     for label in result.get("suggested_labels", []):
@@ -70,20 +103,8 @@ if st.session_state.analysis_result:
 st.markdown("---")
 st.markdown("## 🧾 Analysis History")
 
-def fetch_and_update_history():
-    """Fetches analysis history from the backend and updates session state."""
-    try:
-        history_response = requests.get("http://127.0.0.1:8000/history")
-        if history_response.status_code == 200:
-            st.session_state.history = history_response.json()
-        else:
-            st.toast(f"Failed to fetch history: {history_response.status_code}", icon="🚨")
-            st.session_state.history = []  # Avoid crashing if fetch fails
-    except Exception as e:
-        st.toast(f"Could not connect to backend: {str(e)}", icon="❌")
-        st.session_state.history = []  # Avoid crashing if fetch fails
 
-# Layout for the refresh button
+
 col1, col2 = st.columns([0.8, 0.2])
 with col2:
     if st.button("🔁 Refresh"):
@@ -93,7 +114,6 @@ with col2:
 if "history" not in st.session_state:
     fetch_and_update_history()
 
-# Show table
 if st.session_state.history:
     st.subheader("Analysis History")
     for item in st.session_state.history:
