@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, create_engine, Session
-
-DATABASE_URL = "sqlite:///./db.sqlite3"  # Local SQLite DB file
+import os
+DATABASE_URL = os.getenv("DATABASE_URL")   # Local SQLite DB file
 
 engine = create_engine(DATABASE_URL, echo=False)
 

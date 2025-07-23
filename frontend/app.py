@@ -1,7 +1,10 @@
 import streamlit as st
 import requests
 import json
+import os
 
+
+BACKEND_URL = os.getenv("BACKEND_URL")
 st.set_page_config(page_title="GitHub Issue Assistant")
 
 def get_severity_label(score: int) -> str:
@@ -40,7 +43,7 @@ if "analysis_result" not in st.session_state:
 def fetch_and_update_history():
     """Fetches analysis history from the backend and updates session state. load the history"""
     try:
-        history_response = requests.get("http://127.0.0.1:8000/history")
+        history_response = requests.get(BACKEND_URL + "/history")
         if history_response.status_code == 200:
             st.session_state.history = history_response.json()
         else:
@@ -56,7 +59,7 @@ if st.button("🔍 Analyze Issue"):
         with st.spinner("Analyzing issue with LLM..."):
             try:
                 response = requests.post(
-                    "http://127.0.0.1:8000/analyze-issue",
+                    BACKEND_URL + "/analyze-issue",
                     headers={"Content-Type": "application/json"},
                     data=json.dumps({
                         "repo_url": repo_url,
