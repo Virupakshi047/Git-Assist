@@ -7,7 +7,6 @@ from app.models import IssueAnalysis
 import json
 from contextlib import asynccontextmanager
 from fastapi.responses import JSONResponse
-from typing import List
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

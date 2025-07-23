@@ -2,7 +2,7 @@ import os
 import json
 from dotenv import load_dotenv
 from pydantic import BaseModel
-from together import AsyncTogether
+from together import Together
 
 load_dotenv()
 
@@ -11,7 +11,7 @@ TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 if not TOGETHER_API_KEY:
     raise ValueError("TOGETHER_API_KEY environment variable not set")
 
-aclient = AsyncTogether(api_key=TOGETHER_API_KEY)
+client = Together(api_key=TOGETHER_API_KEY)
 
 SYSTEM_PROMPT = """
 You are a GitHub Issue Assistant. Given an issue's title, body, and comments,
@@ -67,7 +67,7 @@ async def analyze_issue_with_llm(issue: dict):
     prompt = build_prompt(issue["title"], issue["body"], issue["comments"])
 
     try:
-        response = await aclient.chat.completions.create(
+        response = client.chat.completions.create(
             model="meta-llama/Llama-3.3-70B-Instruct-Turbo-Free",
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
