@@ -29,10 +29,12 @@ async def fetch_issue_and_comments(repo_url: str, issue_number: int):
         issue_response = await client.get(issue_url, headers=HEADERS)
         comments_response = await client.get(comments_url, headers=HEADERS)
 
-    if issue_response.status_code != 200:
-        raise Exception(f"Issue fetch failed: {issue_response.text}")
-    if comments_response.status_code != 200:
-        raise Exception(f"Comments fetch failed: {comments_response.text}")
+    if issue_response.status_code == 404:
+        raise Exception("Issue not found. It might be disabled or private.")
+    if issue_response.status_code == 403:
+        raise Exception("Access denied or rate limited. Try again later.")
+    if issue_response.status_code == 500:
+        raise Exception("GitHub server error. Try again later.")
 
     issue_data = issue_response.json()
     comments_data = comments_response.json()
