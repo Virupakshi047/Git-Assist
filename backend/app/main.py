@@ -17,6 +17,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+@app.get("/")
+def read_root():
+    return {"message": "Backend is LIVE🥳!"}
+
 @app.post("/analyze-issue")
 async def analyze_issue(req: IssueRequest):
     try:
