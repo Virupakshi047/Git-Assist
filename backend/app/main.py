@@ -60,7 +60,7 @@ def get_history():
     try:
         session = get_session()
         statement = select(IssueAnalysis).order_by(IssueAnalysis.created_at.desc())
-        results = session.exec(statement).all()
+        results = session.exec(statement).all(limit=5) 
 
         history = []
         for row in results:
