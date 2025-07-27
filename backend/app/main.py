@@ -63,8 +63,8 @@ async def analyze_issue(req: IssueRequest):
 def get_history():
     try:
         session = get_session()
-        statement = select(IssueAnalysis).order_by(IssueAnalysis.created_at.desc())
-        results = session.exec(statement).all(limit=5) 
+        statement = select(IssueAnalysis).order_by(IssueAnalysis.created_at.desc()).limit(5)
+        results = session.exec(statement).all() 
 
         history = []
         for row in results:

@@ -26,11 +26,8 @@ severity_colors = {
     "Critical": "red"
 }
 
-col1, col2 = st.columns([0.15, 0.85])
-with col1:
-    st.title("AI Powered")
-with col2:
-    st.title("GitHub Issue Assistant")
+
+st.title("GitHub Issue Assistant")
 st.markdown("Analyze and summarize any public GitHub issue using AI.")
 
 
