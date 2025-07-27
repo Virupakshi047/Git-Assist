@@ -8,6 +8,7 @@ load_dotenv()
 GITHUB_API_BASE = "https://api.github.com"
 
 HEADERS = {
+    "Authorization": f"Bearer {os.getenv('GITHUB_TOKEN')}",
     "Accept": "application/vnd.github+json"
 }
 
