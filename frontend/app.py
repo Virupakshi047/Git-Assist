@@ -28,7 +28,7 @@ severity_colors = {
 
 col1, col2 = st.columns([0.15, 0.85])
 with col1:
-    st.image("assets/github-copilot-logo.png", width=80)
+    st.title("AI Powered")
 with col2:
     st.title("GitHub Issue Assistant")
 st.markdown("Analyze and summarize any public GitHub issue using AI.")
