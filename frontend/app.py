@@ -4,7 +4,8 @@ import json
 import os
 
 
-BACKEND_URL = os.getenv("BACKEND_URL")
+BACKEND_URL = st.secrets["backend_url"]
+
 st.set_page_config(page_title="GitHub Issue Assistant")
 
 def get_severity_label(score: int) -> str:
